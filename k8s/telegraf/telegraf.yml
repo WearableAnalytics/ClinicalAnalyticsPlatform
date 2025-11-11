@@ -23,7 +23,7 @@ data:
   
     [[inputs.kafka_consumer]]
       brokers = ["my-cluster-kafka-bootstrap:9092"]
-      topics = ["wearables-fhir"]
+      topics = ["wearables-lp"]
       max_message_len = 1000000
       consumer_fetch_default = "1MB"
       version = "4.0.0"
@@ -37,7 +37,7 @@ data:
     
     [[outputs.influxdb_v2]]
       urls = ["http://influx-service.test.svc.cluster.local:8086"]
-      token = "WWC4CqjzlKvgQs_XGX9L-9tan8YfMvqXDCmYbKf4l80Hekp1a3_jJbZToWfY1mGKMUuA8CATNlI9Jap5MUZz-g=="
+      token = "p-5-DcHD6PYruOiqQ4EDZaBM19GNW7C10n1puRQl3Jvyso3aDtgGo04h2KIvY1brwGNstWeLcuRqhuDAh3ypwQ=="
       organization = "test"
       bucket = "test"
 ---
@@ -62,13 +62,6 @@ spec:
         - name: telegraf
           image: telegraf:1.36 # supports Kafka >= v4.x
           imagePullPolicy: IfNotPresent
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 500m
-              memory: 256Mi
           volumeMounts:
             - name: telegraf-config
               mountPath: /etc/telegraf/telegraf.conf
@@ -81,3 +74,8 @@ spec:
         - name: telegraf-config
           configMap:
             name: telegraf-config
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: telegraf
