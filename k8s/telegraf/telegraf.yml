@@ -36,8 +36,8 @@ data:
       report_active = false
     
     [[outputs.influxdb_v2]]
-      urls = ["http://influx-service.test.svc.cluster.local:8086"]
-      token = "p-5-DcHD6PYruOiqQ4EDZaBM19GNW7C10n1puRQl3Jvyso3aDtgGo04h2KIvY1brwGNstWeLcuRqhuDAh3ypwQ=="
+      urls = [""]
+      token = ""
       organization = "test"
       bucket = "test"
 ---
