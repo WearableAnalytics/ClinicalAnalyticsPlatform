@@ -1,0 +1,56 @@
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: timescaledb-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 10Gi # please chang that an tune that
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: timescaledb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: timescaledb
+  template:
+    metadata:
+      labels:
+        app: timescaledb
+    spec:
+      containers:
+      - name: timescaledb
+        image: timescale/timescaledb:latest-pg16 # pg16 because there might be some instabilities with pg17
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 5432
+        envFrom:
+          - secretRef:
+              name: timescaledb-secret
+        volumeMounts:
+          - name: timescaledb-pvc
+            mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: timescaledb-pvc
+          persistentVolumeClaim:
+            claimName: timescaledb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: timescaledb
+spec:
+  selector:
+    app: timescaledb
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432
+  type: ClusterIP
