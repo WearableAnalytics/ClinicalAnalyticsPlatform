@@ -1,40 +1,6 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: processors-star
-data:
-  fhir.star: |
-    def apply(metric):
-      
-      if not metric.fields:
-        return metric
-    
-      fhir = metric.fields
-      
-      new_metric = metric
-      new_metric.measurement = fhir.get("resourceType", "FHIR-Resource")
-      new_metric.tags["device"] = fhir.get("device", "")
-      new_metric.tags["user"] = fhir.get("user", "")
-      
-      code_coding = fhir.get("code", {}).get("coding", [])
-      if len(code_coding) > 0:
-        new_metric.tags["code"] = code_coding[0].get("code", "")
-        new_metric.tags["system"] = code_coding[0].get("system", "")
-        new_metric.tags["display"] = code_coding[0].get("display", "")
-    
-      value_quantity = fhir.get("valueQuantity", {})
-      new_metric.fields["value"] = value_quantity.get("value", 0)
-      new_metric.fields["unit"] = value_quantity.get("unit", "")
-      new_metric.fields["status"] = fhir.get("status", "")
-    
-      if "effectiveDateTime" in fhir:
-        new_metric.time = fhir["effectiveDateTime"]
-    
-      return new_metric
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: telegraf-config
 data:
   telegraf.conf: |
@@ -104,9 +70,6 @@ spec:
               cpu: 500m
               memory: 256Mi
           volumeMounts:
-            - name: processors-star
-              mountPath: /etc/telegraf/fhir.star
-              subPath: fhir.star
             - name: telegraf-config
               mountPath: /etc/telegraf/telegraf.conf
               subPath: telegraf.conf
@@ -118,6 +81,3 @@ spec:
         - name: telegraf-config
           configMap:
             name: telegraf-config
-        - name: processors-star
-          configMap:
-            name: processors-star
