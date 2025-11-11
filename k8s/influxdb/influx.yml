@@ -38,9 +38,6 @@ spec:
         - name: influxdb-storage
           persistentVolumeClaim:
             claimName: influxdb-pvc
-        - name: influx-config
-          configMap:
-            name: influx-config
 ---
 apiVersion: v1
 kind: Service
